@@ -136,6 +136,36 @@ const App = () => {
     rainPossibility: 48.3,
     observationTime: '2021-01-18 20:36:00'
   })
+
+  const AUTHORIZATION_KEY = 'CWB-726568B3-5804-4C47-9139-1F0358378ED6';
+  const LOCATION_NAME = '臺北';
+
+  const handleClick = () => {
+    fetch(`https://opendata.cwb.gov.tw/api/v1/rest/datastore/O-A0003-001?Authorization=${AUTHORIZATION_KEY}&locationName=${LOCATION_NAME}`)
+      .then((response) => response.json())
+      .then(data => {
+        console.log(data);
+        const [locationData] = data.records.location;
+        console.log(locationData);
+        const needElements = {}
+        const weatherElement = locationData.weatherElement.reduce((prev, item) => {
+          if (['WDSD', 'TEMP'].includes(item.elementName)) {
+            needElements[item.elementName] = item.elementValue;
+          }
+          return needElements;
+        })
+        console.log(weatherElement)
+        setCurrentWeather({
+          ...currentWeather,
+          observationTime: locationData.time.obsTime,
+          locationName: locationData.locationName,
+          windSpeed: weatherElement.WDSD,
+          temperature: weatherElement.TEMP,
+        })
+      }, {})
+
+  }
+
   return (
     <ThemeProvider theme={theme[currentState]}>
       <Container>
@@ -154,7 +184,7 @@ const App = () => {
           <Rain>
             <RainIcon />{currentWeather.rainPossibility}%
         </Rain>
-          <Refresh>
+          <Refresh onClick={handleClick}>
             最後觀測時間：
             {new Intl.DateTimeFormat('zh-tw', {
             hour: 'numeric',
