@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 import { ThemeProvider } from '@emotion/react';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import dayjs from 'dayjs';
 
@@ -126,6 +126,7 @@ const theme = {
 };
 
 const App = () => {
+  console.log('app invoke')
   const [currentState, setCurrentState] = useState('light');
 
   const [currentWeather, setCurrentWeather] = useState({
@@ -137,10 +138,14 @@ const App = () => {
     observationTime: '2021-01-18 20:36:00'
   })
 
+  useEffect(() => {
+    console.log('useEffect')
+    fetchCurrentWeather()
+  }, [])
+
   const AUTHORIZATION_KEY = 'CWB-726568B3-5804-4C47-9139-1F0358378ED6';
   const LOCATION_NAME = '臺北';
-
-  const handleClick = () => {
+  const fetchCurrentWeather = () => {
     fetch(`https://opendata.cwb.gov.tw/api/v1/rest/datastore/O-A0003-001?Authorization=${AUTHORIZATION_KEY}&locationName=${LOCATION_NAME}`)
       .then((response) => response.json())
       .then(data => {
@@ -170,6 +175,7 @@ const App = () => {
     <ThemeProvider theme={theme[currentState]}>
       <Container>
         <WeatherCard>
+          {console.log('render')}
           <Location>{currentWeather.locationName}</Location>
           <Description>{currentWeather.description}</Description>
           <CurrentWeather>
@@ -184,7 +190,7 @@ const App = () => {
           <Rain>
             <RainIcon />{currentWeather.rainPossibility}%
         </Rain>
-          <Refresh onClick={handleClick}>
+          <Refresh onClick={fetchCurrentWeather}>
             最後觀測時間：
             {new Intl.DateTimeFormat('zh-tw', {
             hour: 'numeric',
