@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 import { ThemeProvider } from '@emotion/react';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import dayjs from 'dayjs';
 
@@ -213,8 +213,7 @@ const App = () => {
     comfortability
   } = weatherElement;
 
-  useEffect(() => {
-    const fetchData = async () => {
+  const fetchData = useCallback(async () => {
       setWeatherElement((preState) => {
         return {
           ...preState,
@@ -232,10 +231,12 @@ const App = () => {
         ...weatherForecast,
         isLoading: false
       })
-    }
+    }, [])
 
+
+  useEffect(() => {
     fetchData();
-  }, [])
+  }, [fetchData])
 
 
 
@@ -259,11 +260,7 @@ const App = () => {
             <RainIcon />{rainPossibility}%
         </Rain>
           <Refresh
-            onClick={() => {
-              fetchCurrentWeather();
-              fetchWeatherForecast();
-            }
-            }
+            onClick={fetchData}
             isLoading={isLoading}>
             最後觀測時間：
             {new Intl.DateTimeFormat('zh-tw', {
