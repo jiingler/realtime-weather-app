@@ -1,4 +1,6 @@
-  import styled from '@emotion/styled';
+import {useDemo} from 'react';
+
+import styled from '@emotion/styled';
 import { ReactComponent as DayThunderstorm } from './../images/day-thunderstorm.svg';
 import { ReactComponent as DayClear } from './../images/day-clear.svg';
 import { ReactComponent as DayCloudyFog } from './../images/day-cloudy-fog.svg';
@@ -22,10 +24,58 @@ const IconContainer = styled.div`
   }
 `;
 
-const WeatherIcon = () => {
+const weatherTypes = {
+    isThunderstorm: [15, 16, 17, 18, 21, 22, 33, 34, 35, 36, 41],
+    isClear: [1],
+    isCloudyFog: [25, 26, 27, 28],
+    isCloudy: [2, 3, 4, 5, 6, 7],
+    isFog: [24],
+    isPartiallyClearWithRain: [
+      8, 9, 10, 11, 12, 13,
+      14, 19, 20, 29, 30, 31,
+      32, 38, 39,
+    ],
+    isSnowing: [23, 37, 42],
+  };
+
+  const weatherIcons = {
+    day: {
+      isThunderstorm: <DayThunderstorm />,
+      isClear: <DayClear />,
+      isCloudyFog: <DayCloudyFog />,
+      isCloudy: <DayCloudy />,
+      isFog: <DayFog />,
+      isPartiallyClearWithRain: <DayPartiallyClearWithRain />,
+      isSnowing: <DaySnowing />,
+    },
+    night: {
+      isThunderstorm: <NightThunderstorm />,
+      isClear: <NightClear />,
+      isCloudyFog: <NightCloudyFog />,
+      isCloudy: <NightCloudy />,
+      isFog: <NightFog />,
+      isPartiallyClearWithRain: <NightPartiallyClearWithRain />,
+      isSnowing: <NightSnowing />,
+    },
+  };
+
+  const weatherCode2Type = (weatherCode) => {
+    const [weatherType] = Object.entries(weatherTypes).find(([weatherType, weatherCodes]) => {
+      weatherCodes.includes(Number(weatherCode))
+    });
+
+    return weatherType;
+  }
+
+const WeatherIcon = ({weatherCode, moment}) => {
+
+  const weatherType = useDemo(() => weatherCode2Type(weatherCode), [weatherCode]);
+
+  const weatherIcon = weatherIcon[moment][weatherType];
+
   return (
     <IconContainer>
-      <DayCloudy />
+      {weatherIcon}
     </IconContainer>
   )
 }
